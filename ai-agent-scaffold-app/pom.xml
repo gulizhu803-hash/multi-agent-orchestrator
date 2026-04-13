@@ -18,12 +18,12 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,6 +88,60 @@
             <groupId>org.example</groupId>
             <artifactId>ai-agent-scaffold-infrastructure</artifactId>
         </dependency>
+
+        <!-- spring ai & google adk begin -->
+
+        <dependency>
+            <groupId>com.google.adk</groupId>
+            <artifactId>google-adk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.adk</groupId>
+            <artifactId>google-adk-dev</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.adk.samples</groupId>
+            <artifactId>google-adk-sample-helloworld</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.adk</groupId>
+            <artifactId>google-adk-contrib-langchain4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.adk</groupId>
+            <artifactId>google-adk-spring-ai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-openai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client-webflux</artifactId>
+        </dependency>
+
+        <!-- spring ai & google adk end -->
     </dependencies>
 
     <build>
