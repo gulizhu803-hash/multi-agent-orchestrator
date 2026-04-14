@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
 import org.example.domain.agent.model.valobj.AiAgentRegisterVO;
 import org.example.domain.agent.service.armory.node.RootNode;
+import org.springframework.ai.openai.api.OpenAiApi;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class DefaultArmoryFactory {
     @NoArgsConstructor
     @Builder
     public static class DynamicContext {
+
+        private OpenAiApi openAiApi;
        private Map<String,Object> dataObjects = new HashMap<>();
 
         public <T> void setValue(String key, T value) {
