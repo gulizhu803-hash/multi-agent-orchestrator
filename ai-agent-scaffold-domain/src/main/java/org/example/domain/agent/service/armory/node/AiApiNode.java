@@ -1,6 +1,7 @@
 package org.example.domain.agent.service.armory.node;
 
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
 import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
@@ -10,6 +11,10 @@ import org.example.domain.agent.service.armory.factory.DefaultArmoryFactory;
 import org.springframework.ai.openai.api.OpenAiApi;
 
 public class AiApiNode  extends AbstractArmorySupport{
+
+    @Resource
+    private ChatModelNode chatModelNode;
+
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
 
@@ -33,6 +38,6 @@ public class AiApiNode  extends AbstractArmorySupport{
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         // 如果不需要下一个节点了，可以配置 defaultStrategyHandler
-        return defaultStrategyHandler;
+        return chatModelNode;
     }
 }
