@@ -1,0 +1,49 @@
+package org.example.domain.agent.service.armory.node.workflow;
+
+import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.example.domain.agent.model.entity.ArmoryCommandEntity;
+import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
+import org.example.domain.agent.model.valobj.AiAgentRegisterVO;
+import org.example.domain.agent.model.valobj.enums.AgentTypeEnum;
+import org.example.domain.agent.service.armory.AbstractArmorySupport;
+import org.example.domain.agent.service.armory.factory.DefaultArmoryFactory;
+import org.jvnet.hk2.annotations.Service;
+
+import java.util.List;
+
+@Service
+@Slf4j
+public class ParallelAgentNode extends AbstractArmorySupport {
+    @Override
+    protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
+        return null;
+    }
+
+    @Override
+    public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
+        List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+
+        if (agentWorkflows.isEmpty() || agentWorkflows == null)
+        {
+            return defaultStrategyHandler;
+        }
+        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);
+        String type = agentWorkflow.getType();
+        AgentTypeEnum typeEnum = AgentTypeEnum.formType(type);
+        if (null == typeEnum) {
+            throw new RuntimeException("agentWorkflow type is error!");
+        }
+
+
+        String node = typeEnum.getNode();
+
+        return  switch (node)
+        {
+            case "sequentialAgentNode" -> getBean("sequentialAgentNode");
+            case "loopAgentNode" -> getBean("loopAgentNode");
+            default -> defaultStrategyHandler;
+        };
+
+    }
+}

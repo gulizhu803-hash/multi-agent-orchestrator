@@ -2,14 +2,18 @@ package org.example.domain.agent.service.armory;
 
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.example.domain.agent.IArmoryService;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
 import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
 import org.example.domain.agent.model.valobj.AiAgentRegisterVO;
 import org.example.domain.agent.service.armory.factory.DefaultArmoryFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
+@Service
 public class ArmoryService implements IArmoryService {
     @Resource
     private DefaultArmoryFactory defaultArmoryFactory;
