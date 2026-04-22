@@ -2,6 +2,7 @@ package org.example.domain.agent.service.armory.factory;
 
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.google.adk.agents.BaseAgent;
+import com.google.adk.agents.SequentialAgent;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +15,7 @@ import org.example.domain.agent.service.armory.node.RootNode;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.api.OpenAiApi;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DefaultArmoryFactory {
 
@@ -33,17 +31,29 @@ public class DefaultArmoryFactory {
     @Builder
     public static class DynamicContext {
 
-        // OpenAI API 实例
+        /**
+         * LLM API
+         */
         private OpenAiApi openAiApi;
-        // 聊天模型实例
+
+        /**
+         * LLM ChatModel
+         */
         private ChatModel chatModel;
-        // 通用数据存储对象
-        private Map<String, Object> dataObjects = new HashMap<>();
-        // Agent 分组映射
+
+        /**
+         * 当做最后一个智能体节点
+         */
+        private SequentialAgent sequentialAgent;
+
+        /**
+         * 智能体配置组
+         */
         private Map<String, BaseAgent> agentGroup = new HashMap<>();
 
-        // Agent 工作流列表
         private List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = new ArrayList<>();
+
+        private Map<String, Object> dataObjects = new HashMap<>();
 
         public <T> void setValue(String key, T value) {
             dataObjects.put(key, value);
@@ -51,6 +61,22 @@ public class DefaultArmoryFactory {
 
         public <T> T getValue(String key) {
             return (T) dataObjects.get(key);
+        }
+
+        public List<BaseAgent> queryAgentList(List<String> agentNames) {
+            if (agentNames == null || agentNames.isEmpty() || agentGroup == null) {
+                return Collections.emptyList();
+            }
+
+            List<BaseAgent> agents = new ArrayList<>();
+            for (String name : agentNames) {
+                BaseAgent agent = agentGroup.get(name);
+                if (agent!=null){
+                    agents.add(agent);
+                }
+            }
+
+            return agents;
         }
 
     }

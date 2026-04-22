@@ -1,6 +1,8 @@
 package org.example.domain.agent.service.armory.node.workflow;
 
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import com.google.adk.agents.BaseAgent;
+import com.google.adk.agents.LoopAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
 import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
@@ -17,7 +19,26 @@ import java.util.List;
 public class LoopAgentNode extends AbstractArmorySupport {
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        return null;
+        log.info("Ai Agent 装配操作 - LoopAgentNode");
+        List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.remove(0);  // 从工作流中取出第一个工作流并且移除
+
+      //获取subAgents
+        List<String> subAgentsName = agentWorkflow.getSubAgents();
+        List<BaseAgent> subAgents = dynamicContext.queryAgentList(subAgentsName);
+
+      // 构建循环agent
+      LoopAgent loopAgent =
+            LoopAgent.builder()
+                    .name(agentWorkflow.getName())
+                    .description(agentWorkflow.getDescription())
+                    .subAgents(subAgents)
+                    .maxIterations(agentWorkflow.getMaxIterations())
+                    .build();
+
+        dynamicContext.getAgentGroup().put(agentWorkflow.getName(), loopAgent);
+
+        return router(requestParameter, dynamicContext);
     }
 
     @Override
