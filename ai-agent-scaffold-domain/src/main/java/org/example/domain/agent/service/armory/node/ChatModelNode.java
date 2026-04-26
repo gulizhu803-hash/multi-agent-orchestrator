@@ -33,7 +33,7 @@ import java.util.List;
 @Service
 public class ChatModelNode extends AbstractArmorySupport {
     @Resource
-    private AgentWorkflowNode agentNode;
+    private AgentNode agentNode;
 
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
@@ -68,20 +68,26 @@ public class ChatModelNode extends AbstractArmorySupport {
         // - OpenAiChatModel: Spring AI 对 OpenAI 接口的标准实现，统一了 ChatClient 的调用入口
         // - OpenAiChatOptions: 运行时参数，包括模型名称、温度、TopP 等，以及关键的 ToolCallbacks
         // - SyncMcpToolCallbackProvider: 适配器模式，将 MCP 协议的工具描述转换为 Spring AI 可识别的 FunctionCallback
+        
+        OpenAiChatOptions.Builder optionsBuilder = OpenAiChatOptions.builder()
+                .model(chatModelConfig.getModel()); // 指定具体模型，如 gpt-4o
+        
+        // 仅当存在 MCP 客户端时才添加工具回调
+        if (!mcpSyncClients.isEmpty()) {
+            log.debug("配置 {} 个 MCP 工具客户端", mcpSyncClients.size());
+            optionsBuilder.toolCallbacks(
+                SyncMcpToolCallbackProvider.builder()
+                    .mcpClients(mcpSyncClients)
+                    .build()
+                    .getToolCallbacks()
+            );
+        } else {
+            log.debug("未配置 MCP 工具，使用纯聊天模型");
+        }
+        
         ChatModel chatModel = OpenAiChatModel.builder()
                 .openAiApi(openAiApi) // 注入通信底层
-                .defaultOptions(OpenAiChatOptions.builder()
-                        .model(chatModelConfig.getModel()) // 指定具体模型，如 gpt-4o
-                        .toolCallbacks(
-                                // 仅当存在 MCP 客户端时才构建 Provider，避免空指针或无效开销
-                                !mcpSyncClients.isEmpty() ?
-                                        SyncMcpToolCallbackProvider.builder()
-                                                .mcpClients(mcpSyncClients)
-                                                .build()
-                                                .getToolCallbacks()
-                                        : null
-                        )
-                        .build())
+                .defaultOptions(optionsBuilder.build())
                 .build();
 
         // 5. 将构建好的 ChatModel 注入上下文
@@ -97,7 +103,7 @@ public class ChatModelNode extends AbstractArmorySupport {
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        return null;
+        return agentNode;
     }
 
     private McpSyncClient createMcpSyncClient(AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp) throws Exception

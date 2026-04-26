@@ -11,22 +11,13 @@ ai:
           module:
             ai-api:
               base-url: https://apis.itedus.cn
-              api-key: REDACTED_OLD_KEY
+              api-key: sk-lhgMShiwS6gNjFGW311120D98a3e4eB29b0f54FdC8Ad5e15
               completions-path: v1/chat/completions
               embeddings-path: v1/embeddings
             chat-model:
               model: gpt-4.1
-              tool-mcp-list:
-                - sse:
-                    name: baidu-search
-                    base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
-                    sse-endpoint: sse?api_key=REDACTED_OLD_KEY
-                    request-timeout: 5000
-                - sse:
-                    name: baidu-map
-                    base-uri: https://mcp.map.baidu.com/
-                    sse-endpoint: sse?ak=REDACTED_OLD_KEY
-                    request-timeout: 5000
+              # 测试环境暂时禁用 MCP 工具,避免网络依赖
+              tool-mcp-list: []
             agents:
               - name: CodeWriterAgent
                 description: Writes initial Java code based on a specification.

@@ -22,6 +22,8 @@ import java.util.List;
 @Service
 public class AgentNode extends AbstractArmorySupport{
 
+    @Resource
+    private AgentWorkflowNode agentWorkflowNode;
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         log.info("Ai Agent 装配操作 - AgentNode");
@@ -59,6 +61,6 @@ public class AgentNode extends AbstractArmorySupport{
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        return defaultStrategyHandler;
+        return agentWorkflowNode;
     }
 }

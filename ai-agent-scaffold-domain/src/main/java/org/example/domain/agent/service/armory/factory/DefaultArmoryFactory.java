@@ -3,6 +3,7 @@ package org.example.domain.agent.service.armory.factory;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.google.adk.agents.BaseAgent;
 import com.google.adk.agents.SequentialAgent;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,15 +15,25 @@ import org.example.domain.agent.model.valobj.AiAgentRegisterVO;
 import org.example.domain.agent.service.armory.node.RootNode;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class DefaultArmoryFactory {
 
     @Resource
-    private static RootNode rootNode;
-    public static StrategyHandler<ArmoryCommandEntity, DynamicContext, AiAgentRegisterVO> armoryStrategyHandler( ){
-        return rootNode;
+    private RootNode rootNode;
+    
+    private static StrategyHandler<ArmoryCommandEntity, DynamicContext, AiAgentRegisterVO> strategyHandler;
+    
+    @PostConstruct
+    public void init() {
+        strategyHandler = rootNode;
+    }
+    
+    public static StrategyHandler<ArmoryCommandEntity, DynamicContext, AiAgentRegisterVO> armoryStrategyHandler() {
+        return strategyHandler;
     }
 
     @Data

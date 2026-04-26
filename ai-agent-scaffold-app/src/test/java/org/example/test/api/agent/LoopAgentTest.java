@@ -55,7 +55,7 @@ public class LoopAgentTest {
     public static void main(String[] args) {
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .baseUrl("https://apis.itedus.cn")
-                .apiKey("sk-wtBOjyNviG9NtbYn7f2fF8A2203048Aa86Be6f0f0b824dB9")
+                .apiKey("sk-lhgMShiwS6gNjFGW311120D98a3e4eB29b0f54FdC8Ad5e15")
                 .completionsPath("v1/chat/completions")
                 .embeddingsPath("v1/embeddings")
                 .build();
