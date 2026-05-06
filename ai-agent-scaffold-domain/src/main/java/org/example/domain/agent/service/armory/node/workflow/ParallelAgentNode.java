@@ -41,7 +41,7 @@ public class ParallelAgentNode extends AbstractArmorySupport {
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
 
-        if (agentWorkflows.isEmpty() || agentWorkflows == null)
+        if (agentWorkflows == null || agentWorkflows.isEmpty())
         {
             return defaultStrategyHandler;
         }

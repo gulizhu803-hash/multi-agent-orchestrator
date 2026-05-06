@@ -1,6 +1,7 @@
 package org.example.domain.agent.model.valobj;
 
 import lombok.Data;
+import org.example.domain.agent.service.armory.node.RunnerNode;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class AiAgentConfigTableVO {
      * 智能体模块
      */
     private Module module;
+
+
 
     @Data
     public static class Agent {
@@ -45,6 +48,8 @@ public class AiAgentConfigTableVO {
 
     @Data
     public static class Module {
+
+        private Runner runner;
 
         private AiApi aiApi;
 
@@ -124,6 +129,11 @@ public class AiAgentConfigTableVO {
             private Integer maxIterations = 3;
 
         }
+        @Data
+        public static class Runner {
+            private String agentName;
+        }
+
     }
 
 }

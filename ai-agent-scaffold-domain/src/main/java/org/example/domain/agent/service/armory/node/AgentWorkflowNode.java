@@ -32,6 +32,8 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
     private ParallelAgentNode parallelAgentNode;
     @Resource
     private SequentialAgentNode sequentialAgentNode ;
+    @Resource
+    private RunnerNode runnerNode;
 
 
     @Override
@@ -45,10 +47,11 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
         /**
          * 检查是否为空
          */
-        if (agentWorkflows.isEmpty() || agentWorkflows == null)
+        if (agentWorkflows == null || agentWorkflows.isEmpty())
         {
             log.error("Ai Agent 装配失败 - AgentWorkflowNode [agentWorkflows 配置为空]");
-            throw new RuntimeException("AgentWorkflow is empty");
+
+            return  router(requestParameter,dynamicContext);
         }
 
         dynamicContext.setAgentWorkflows(agentWorkflows);
@@ -60,7 +63,10 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
 
         List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
-        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);  //获取第一个，接下来只要获取 去掉头的第一个
+        if (agentWorkflows == null || agentWorkflows.isEmpty()) {
+            return runnerNode;
+        }
+        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);  //获取第一个
 
         //判断类型
         String type = agentWorkflow.getType();
@@ -68,7 +74,7 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
         if(typeEnum == null)
         {
             log.error("Ai Agent 装配失败 - AgentWorkflowNode [不支持的工作流类型: {}]", type);
-            throw new RuntimeException("agentWorkflow type is error! Unsupported type: " + type);
+            return  runnerNode;
         }
         String node = typeEnum.getNode();
         return switch (node){
