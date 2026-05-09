@@ -1,4 +1,4 @@
-package org.example.domain.agent.service.armory.mcp.client;
+package org.example.domain.agent.service.armory.matter.mcp.client;
 
 import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
 import org.springframework.ai.tool.ToolCallback;

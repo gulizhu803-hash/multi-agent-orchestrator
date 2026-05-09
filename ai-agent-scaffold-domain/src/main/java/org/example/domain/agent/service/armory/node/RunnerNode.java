@@ -3,7 +3,9 @@ package org.example.domain.agent.service.armory.node;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.google.adk.agents.BaseAgent;
 import com.google.adk.agents.SequentialAgent;
+import com.google.adk.plugins.BasePlugin;
 import com.google.adk.runner.InMemoryRunner;
+import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
@@ -15,6 +17,10 @@ import org.example.types.enums.ResponseCode;
 import org.example.types.exception.AppException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -47,7 +53,7 @@ public class RunnerNode extends AbstractArmorySupport {
     }
 
     @NotNull
-    private static InMemoryRunner getRunner(DefaultArmoryFactory.DynamicContext dynamicContext, AiAgentConfigTableVO aiAgentConfigTableVO, String appName) {
+    private  InMemoryRunner getRunner(DefaultArmoryFactory.DynamicContext dynamicContext, AiAgentConfigTableVO aiAgentConfigTableVO, String appName) {
         AiAgentConfigTableVO.Module.Runner runnerConfig = aiAgentConfigTableVO.getModule().getRunner();
 
         String agentName = runnerConfig.getAgentName();
@@ -57,8 +63,21 @@ public class RunnerNode extends AbstractArmorySupport {
         }
 
         BaseAgent baseAgent = dynamicContext.getAgentGroup().get(agentName);
+        List<BasePlugin> pluginList;
+        //拿到plugin名字
+        List<String> pluginNames = runnerConfig.getPluginNameList();
+        if (null != pluginNames && !pluginNames.isEmpty()) {
+            pluginList = new ArrayList<>();
+            for (String pluginName  : pluginNames) {
+                BasePlugin plugin = getBean(pluginName);
+                pluginList.add(plugin);
+            }
+        } else {
+            pluginList = ImmutableList.of();
+        }
 
-        return new InMemoryRunner(baseAgent, appName);
+
+        return new InMemoryRunner(baseAgent, appName,pluginList);
     }
 
     @Override

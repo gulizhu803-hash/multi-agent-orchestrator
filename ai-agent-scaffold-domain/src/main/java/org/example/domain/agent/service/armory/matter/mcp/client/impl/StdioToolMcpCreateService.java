@@ -1,4 +1,4 @@
-package org.example.domain.agent.service.armory.mcp.client.impl;
+package org.example.domain.agent.service.armory.matter.mcp.client.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.client.McpClient;
@@ -9,7 +9,7 @@ import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.agent.model.valobj.AiAgentConfigTableVO;
-import org.example.domain.agent.service.armory.mcp.client.TooMcpCreateService;
+import org.example.domain.agent.service.armory.matter.mcp.client.TooMcpCreateService;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
