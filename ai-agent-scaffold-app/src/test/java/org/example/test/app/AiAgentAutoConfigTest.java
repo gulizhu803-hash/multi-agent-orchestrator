@@ -163,6 +163,56 @@ public class AiAgentAutoConfigTest {
         Assertions.assertTrue(fullOutput.contains("学习"),
                 "返回内容应包含'学习'相关文本，实际输出:" + fullOutput);
     }
+    @Test
+    public void test_handlerMessage_04(){
+        log.info("========== 开始测试 test_handlerMessage_04 ==========");
+        
+        AiAgentRegisterVO aiAgentRegisterVO = applicationContext.getBean("100003", AiAgentRegisterVO.class);
+
+        String appName = aiAgentRegisterVO.getAppName();
+        InMemoryRunner runner = aiAgentRegisterVO.getRunner();
+
+        Session session = runner.sessionService()
+                .createSession(appName, "xiaofuge")
+                .blockingGet();
+        log.info("✅ 会话创建成功: {}", session.id());
+
+        Content userMsg = Content.fromParts(Part.fromText("把xiaofuge转换为大写"));
+        log.info("📤 发送消息: 把xiaofuge转换为大写");
+        
+        Flowable<Event> events = runner.runAsync("xiaofuge", session.id(), userMsg);
+
+        List<String> outputs = new ArrayList<>();
+        try {
+            events.timeout(60, TimeUnit.SECONDS)
+                .blockingForEach(event -> {
+                    String content = event.stringifyContent();
+                    outputs.add(content);
+                    log.info("📨 收到 Event: {}", content);
+                    System.out.println("[STDOUT] Event: " + content);
+                });
+        } catch (Exception e) {
+            log.error("❌ Agent 执行失败!", e);
+            System.out.println("[STDOUT] ❌ 错误: " + e.getMessage());
+            throw new AssertionError("Agent执行异常: " + e.getMessage(), e);
+        }
+
+        System.out.println("[STDOUT] ========== 测试结果 ==========");
+        System.out.println("[STDOUT] 收到 " + outputs.size() + " 个事件");
+        if (!outputs.isEmpty()) {
+            System.out.println("[STDOUT] " + JSON.toJSONString(outputs));
+        }
+        log.info("✅ 测试结果: 共收到 {} 个事件", outputs.size());
+        log.info("测试结果:{}", JSON.toJSONString(outputs));
+        
+        // 添加断言验证结果
+        Assertions.assertFalse(outputs.isEmpty(), "Agent应返回至少一个非空事件");
+        String fullOutput = String.join(" ", outputs);
+        Assertions.assertTrue(fullOutput.toUpperCase().contains("XIAOFUGE"),
+                "返回内容应包含'XIAOFUGE'（大写形式），实际输出:" + fullOutput);
+        
+        System.out.println("[STDOUT] ========== 测试结束 ==========");
+    }
 
 
 }
