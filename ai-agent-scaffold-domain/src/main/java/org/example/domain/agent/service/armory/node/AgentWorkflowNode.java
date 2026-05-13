@@ -1,6 +1,6 @@
 package org.example.domain.agent.service.armory.node;
 
-import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import org.example.domain.agent.service.armory.tree.StrategyHandler;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
@@ -47,14 +47,17 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
         /**
          * 检查是否为空
          */
-        if (agentWorkflows == null || agentWorkflows.isEmpty())
-        {
-            log.error("Ai Agent 装配失败 - AgentWorkflowNode [agentWorkflows 配置为空]");
-
-            return  router(requestParameter,dynamicContext);
+        if (null == agentWorkflows || agentWorkflows.isEmpty() || dynamicContext.getCurrentStepIndex() >= agentWorkflows.size()) {
+            // 设置结果值
+            dynamicContext.setCurrentAgentWorkflow(null);
+            // 路由下节点
+            return router(requestParameter, dynamicContext);
         }
 
-        dynamicContext.setAgentWorkflows(agentWorkflows);
+//        dynamicContext.setAgentWorkflows(agentWorkflows);
+        dynamicContext.setCurrentAgentWorkflow(agentWorkflows.get(dynamicContext.getCurrentStepIndex()));
+        // 步骤值增加
+        dynamicContext.addCurrentStepIndex();
 
         return router(requestParameter, dynamicContext);
     }
@@ -62,14 +65,21 @@ public class AgentWorkflowNode extends AbstractArmorySupport {
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
 
-        List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
-        if (agentWorkflows == null || agentWorkflows.isEmpty()) {
+//        List<AiAgentConfigTableVO.Module.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+//        if (agentWorkflows == null || agentWorkflows.isEmpty()) {
+//            return runnerNode;
+//        }
+//        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);  //获取第一个
+
+
+        AiAgentConfigTableVO.Module.AgentWorkflow currentAgentWorkflow = dynamicContext.getCurrentAgentWorkflow();
+        if (null ==currentAgentWorkflow)
+        {
             return runnerNode;
         }
-        AiAgentConfigTableVO.Module.AgentWorkflow agentWorkflow = agentWorkflows.get(0);  //获取第一个
 
         //判断类型
-        String type = agentWorkflow.getType();
+        String type = currentAgentWorkflow.getType();
         AgentTypeEnum typeEnum = AgentTypeEnum.formType(type);
         if(typeEnum == null)
         {

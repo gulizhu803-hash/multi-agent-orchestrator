@@ -36,16 +36,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <google.adk.version>1.1.0</google.adk.version>
     </properties>
 
-    <developers>
-        <developer>
-            <name>xiaofuge</name>
-            <email>184172133@qq.com</email>
-            <organization>fuzhengwei</organization>
-            <organizationUrl>https://github.com/fuzhengwei</organizationUrl>
-        </developer>
-    </developers>
+
 
     <licenses>
         <license>
@@ -62,6 +56,39 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- 强制统一 Spring Framework 版本，解决 NoSuchMethodError -->
+            <!-- Spring Boot 3.4.3 对应 Spring Framework 6.2.4 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>6.2.4</version>
+            </dependency>
+
             <!-- 强制统一 SLF4J 和 Logback 版本,解决 google-adk 依赖冲突 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -163,25 +190,25 @@
             <dependency>
                 <groupId>com.google.adk</groupId>
                 <artifactId>google-adk</artifactId>
-                <version>0.4.0</version>
+                <version>${google.adk.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.google.adk</groupId>
                 <artifactId>google-adk-dev</artifactId>
-                <version>0.4.0</version>
+                <version>${google.adk.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.google.adk</groupId>
                 <artifactId>google-adk-spring-ai</artifactId>
-                <version>0.4.0</version>
+                <version>${google.adk.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.google.adk.samples</groupId>
                 <artifactId>google-adk-sample-helloworld</artifactId>
-                <version>0.4.0</version>
+                <version>${google.adk.version}</version>
             </dependency>
 
             <dependency>
@@ -206,13 +233,6 @@
                 <version>1.4.0</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <!-- 设计模式框架 -->
-            <dependency>
-                <groupId>cn.bugstack.wrench</groupId>
-                <artifactId>xfg-wrench-starter-design-framework</artifactId>
-                <version>3.0.0</version>
             </dependency>
 
         </dependencies>

@@ -1,6 +1,6 @@
 package org.example.domain.agent.service.armory;
 
-import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import org.example.domain.agent.service.armory.tree.StrategyHandler;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.agent.IArmoryService;

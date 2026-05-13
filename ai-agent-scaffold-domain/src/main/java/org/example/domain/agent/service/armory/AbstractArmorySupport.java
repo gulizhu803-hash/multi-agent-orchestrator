@@ -1,6 +1,6 @@
 package org.example.domain.agent.service.armory;
 
-import cn.bugstack.wrench.design.framework.tree.AbstractMultiThreadStrategyRouter;
+import org.example.domain.agent.service.armory.tree.AbstractMultiThreadStrategyRouter;
 import org.example.domain.agent.model.entity.ArmoryCommandEntity;
 import org.example.domain.agent.model.valobj.AiAgentRegisterVO;
 import org.example.domain.agent.service.armory.factory.DefaultArmoryFactory;
