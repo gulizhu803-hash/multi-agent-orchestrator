@@ -7,6 +7,7 @@ import com.google.genai.types.Content;
 import com.google.genai.types.Part;
 import guru.nidi.graphviz.attribute.LinkAttr;
 import io.reactivex.rxjava3.core.Flowable;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.Context;
 import org.example.domain.agent.IChatService;
 import org.example.domain.agent.model.entity.ChatCommandEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class ChatService implements IChatService {
 
@@ -100,11 +102,30 @@ public class ChatService implements IChatService {
         if (null == aiAgentRegisterVO){
             throw new AppException(ResponseCode.E0001.getCode());
         }
-//        Context context = fromP
-        Content content =Content.fromParts(Part.fromText(message));
 
+        // 验证并获取有效的 sessionId
+        String validSessionId = sessionId;
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            // 如果 sessionId 为空，创建新会话
+            validSessionId = createSession(agentId, userId);
+        } else {
+            // 验证会话是否存在，如果不存在则重新创建
+            try {
+                InMemoryRunner runner = aiAgentRegisterVO.getRunner();
+                String appName = aiAgentRegisterVO.getAppName();
+                // 尝试获取会话，如果不存在会抛出异常
+                runner.sessionService().getSession(appName, userId, sessionId, java.util.Optional.empty())
+                        .blockingGet();
+            } catch (Exception e) {
+                // 会话不存在，创建新会话
+                log.warn("会话 {} 不存在，为用户 {} 创建新会话", sessionId, userId);
+                validSessionId = createSession(agentId, userId);
+            }
+        }
+
+        Content content = Content.fromParts(Part.fromText(message));
         InMemoryRunner runner = aiAgentRegisterVO.getRunner();
-        Flowable<Event> events = runner.runAsync(userId,sessionId, content);
+        Flowable<Event> events = runner.runAsync(userId, validSessionId, content);
         List<String> output = new ArrayList<>();
 
         events.blockingForEach(event -> output.add(event.stringifyContent()));
@@ -119,9 +140,29 @@ public class ChatService implements IChatService {
             throw new AppException(ResponseCode.E0001.getCode());
         }
 
+        // 验证并获取有效的 sessionId
+        String validSessionId = sessionId;
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            // 如果 sessionId 为空，创建新会话
+            validSessionId = createSession(agentId, userId);
+        } else {
+            // 验证会话是否存在，如果不存在则重新创建
+            try {
+                InMemoryRunner runner = aiAgentRegisterVO.getRunner();
+                String appName = aiAgentRegisterVO.getAppName();
+                // 尝试获取会话，如果不存在会抛出异常
+                runner.sessionService().getSession(appName, userId, sessionId, java.util.Optional.empty())
+                        .blockingGet();
+            } catch (Exception e) {
+                // 会话不存在，创建新会话
+                log.warn("流式对话 - 会话 {} 不存在，为用户 {} 创建新会话", sessionId, userId);
+                validSessionId = createSession(agentId, userId);
+            }
+        }
+
         Content userMessage = Content.fromParts(Part.fromText(message));
         InMemoryRunner runner = aiAgentRegisterVO.getRunner();
-        return runner.runAsync(userId, sessionId, userMessage);
+        return runner.runAsync(userId, validSessionId, userMessage);
 
     }
 

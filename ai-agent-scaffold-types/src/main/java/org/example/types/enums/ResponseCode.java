@@ -13,6 +13,7 @@ public enum ResponseCode {
     UN_ERROR("0001", "未知失败"),
     ILLEGAL_PARAMETER("0002", "非法参数"),
     NOT_FOUND_METHOD("0003", "不存在的方法"),
+    MISSING_REQUIRED_PARAM("0004", "缺少必填参数"),
 
     E0001("E0001", "智能体ID不存在"),
     E0002("E0002", "智能体MCP配置不在可加载范围"),

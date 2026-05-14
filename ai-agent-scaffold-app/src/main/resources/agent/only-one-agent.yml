@@ -21,7 +21,7 @@ ai:
                     name: baidu-search
                     base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
                     sse-endpoint: sse?api_key=REDACTED_OLD_KEY
-                    request-timeout: 5000
+                    request-timeout: 30000
             agents:
               - name: onlyAgent
                 description: 小傅哥学习项目计划
