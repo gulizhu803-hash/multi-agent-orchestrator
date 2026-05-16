@@ -19,6 +19,7 @@ spring:
       #      - classpath:agent/test_agent_02.yml
 #      - classpath:agent/test_agent.yml
       - classpath:agent/only-one-agent.yml
+      - optional:file:data/agent-configs/    # 追加扫描外部目录（不存在时不报错）
   datasource:
     username: root
     password: 123456

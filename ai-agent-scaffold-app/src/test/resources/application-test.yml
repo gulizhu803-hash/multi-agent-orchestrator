@@ -1,0 +1,17 @@
+spring:
+  # 排除数据库自动配置
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
+  config:
+    import:
+      # 使用主环境的完整配置(包含 MCP 工具)
+      - classpath:agent/only-one-agent.yml
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    org.example: DEBUG

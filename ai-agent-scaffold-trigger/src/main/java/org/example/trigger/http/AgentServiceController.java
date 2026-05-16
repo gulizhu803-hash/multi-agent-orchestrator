@@ -80,7 +80,7 @@ public class AgentServiceController implements IAgentService {
      * @return 创建会话响应结果，包含会话ID等信息
      */
     @RequestMapping(value = "create_session", method = RequestMethod.GET)
-    @Override
+//    @Override
     public Response<CreateSessionResponseDTO> createSession( CreateSessionRequestDTO requestDTO){
         try {
             // 参数校验
@@ -131,7 +131,7 @@ public class AgentServiceController implements IAgentService {
      * @return 聊天响应结果，包含AI回复内容
      */
     @RequestMapping(value = "chat", method = RequestMethod.POST)
-    @Override
+//    @Override
     public Response<ChatResponseDTO> chat(@RequestBody ChatRequestDTO requestDTO) {
         try {
             log.info("智能体对话 agentId:{} userId:{}", requestDTO.getAgentId(), requestDTO.getUserId());
