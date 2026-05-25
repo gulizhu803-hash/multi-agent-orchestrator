@@ -1,0 +1,10 @@
+services:
+  scaffold-web:
+    build: .
+    container_name: ai-agent-scaffold-web
+    ports:
+      - "8080:80"
+    environment:
+      # 改成你的服务器 IP 或域名（别人能访问的地址）
+      - SERVER_URL=http://localhost:8080
+    restart: unless-stopped

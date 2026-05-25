@@ -18,7 +18,8 @@ spring:
     import:
       #      - classpath:agent/test_agent_02.yml
 #      - classpath:agent/test_agent.yml
-      - classpath:agent/only-one-agent.yml
+#      - classpath:agent/only-one-agent.yml
+      - classpath:agent/test_agent.yml
   datasource:
     username: root
     password: 123456
