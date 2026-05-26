@@ -13,6 +13,7 @@ if exist "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-r
 if exist "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\.claude" rmdir /s /q "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\.claude"
 if exist "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\data\log" rmdir /s /q "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\data\log"
 if exist "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\__rootArtifactId__-app\data\log" rmdir /s /q "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\__rootArtifactId__-app\data\log"
+if exist "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\__rootArtifactId__-app\env-config.properties" del /f /q "target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources\__rootArtifactId__-app\env-config.properties"
 
 echo [2b/4] 修复模板中的硬编码 scaffold 名称...
 set ARCH_RES=target\ai-agent-scaffold-lite-archetype\src\main\resources\archetype-resources

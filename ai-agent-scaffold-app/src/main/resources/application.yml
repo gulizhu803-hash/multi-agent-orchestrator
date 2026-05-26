@@ -1,5 +1,6 @@
 spring:
   config:
     name: ai-agent-scaffold-app
+    import: optional:file:./env-config.properties
   profiles:
     active: dev

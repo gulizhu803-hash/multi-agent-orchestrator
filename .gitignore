@@ -37,3 +37,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# 本地环境配置（含敏感信息）
+env-config.properties

@@ -34,7 +34,7 @@ public class ApiTest {
 
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .baseUrl("https://apis.itedus.cn")
-                .apiKey("sk-2GQTYTNoQSs7qizlE9F00bD84d254c2994D44d6410B0Ac8f")
+                .apiKey(System.getenv("AI_AGENT_OPENAI_API_KEY"))
                 .completionsPath("v1/chat/completions")
                 .embeddingsPath("v1/embeddings")
                 .build();

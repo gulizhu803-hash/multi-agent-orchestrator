@@ -68,3 +68,18 @@ mvn archetype:generate \
 
 生成的 `your-project` 会包含完整的 DDD 模块结构、Docker 部署配置及启动脚本。
 
+## 本地配置（API Key / 数据库密码）
+
+所有敏感信息统一放在 `ai-agent-scaffold-app/env-config.properties`，Spring 启动时自动加载：
+
+```properties
+# 编辑此文件填入你的 key
+AI_AGENT_OPENAI_API_KEY=sk-your-api-key-here
+AI_AGENT_MCP_API_KEY=bce-v3/your-mcp-api-key-here
+MYSQL_ROOT_PASSWORD=your-db-password
+```
+
+该文件已被 `.gitignore` 排除，不会提交到 Git，也不会进入生成的 Archetype 模板。
+
+参考 `.env.example` 查看所有可用变量。
+

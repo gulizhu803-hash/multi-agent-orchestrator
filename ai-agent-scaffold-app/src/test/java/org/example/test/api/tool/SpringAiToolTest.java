@@ -23,7 +23,7 @@ public class SpringAiToolTest {
     public static void main(String[] args) {
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .baseUrl("https://apis.itedus.cn")
-                .apiKey("REDACTED_OLD_KEY")
+                .apiKey(System.getenv("AI_AGENT_OPENAI_API_KEY"))
                 .completionsPath("v1/chat/completions")
                 .embeddingsPath("v1/embeddings")
                 .build();
@@ -67,7 +67,7 @@ public class SpringAiToolTest {
 
         // 自己申请 api_key
         HttpClientSseClientTransport sseClientTransport = HttpClientSseClientTransport.builder("https://appbuilder.baidu.com/v2/ai_search/mcp/")
-                .sseEndpoint("sse?api_key=REDACTED_OLD_KEY")
+                .sseEndpoint("sse?api_key=" + System.getenv("AI_AGENT_MCP_API_KEY"))
                 .build();
 
         McpSyncClient mcpSyncClient = McpClient.sync(sseClientTransport)

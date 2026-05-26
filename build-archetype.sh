@@ -15,6 +15,7 @@ rm -rf target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-reso
 rm -rf target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-resources/.claude
 rm -rf target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-resources/data/log
 rm -rf target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-resources/__rootArtifactId__-app/data/log
+rm -f target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-resources/__rootArtifactId__-app/env-config.properties
 
 echo "[2b/4] 修复模板中的硬编码 scaffold 名称..."
 ARCH_RES="target/ai-agent-scaffold-lite-archetype/src/main/resources/archetype-resources"

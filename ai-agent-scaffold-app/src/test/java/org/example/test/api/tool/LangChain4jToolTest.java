@@ -28,7 +28,7 @@ public class LangChain4jToolTest {
         System.out.println("=== 正在初始化 LangChain4j 模型... ===");
         OpenAiChatModel model = OpenAiChatModel.builder()
                 .baseUrl("https://apis.itedus.cn/v1")
-                .apiKey("REDACTED_OLD_KEY")
+                .apiKey(System.getenv("AI_AGENT_OPENAI_API_KEY"))
                 .modelName("gpt-4o-mini")
                 .build();
 
@@ -62,7 +62,7 @@ public class LangChain4jToolTest {
     public static McpSyncClient sseMcpClient() {
 
         HttpClientSseClientTransport sseClientTransport = HttpClientSseClientTransport.builder("https://appbuilder.baidu.com/v2/ai_search/mcp/")
-                .sseEndpoint("sse?api_key=REDACTED_OLD_KEY")
+                .sseEndpoint("sse?api_key=" + System.getenv("AI_AGENT_MCP_API_KEY"))
                 .build();
 
         McpSyncClient mcpSyncClient = McpClient.sync(sseClientTransport).requestTimeout(Duration.ofSeconds(30)).build();

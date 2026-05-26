@@ -24,7 +24,7 @@ public class SSEToolMcpCreateService implements TooMcpCreateService {
     public ToolCallback[] buildToolCallback(AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp) throws Exception {
         AiAgentConfigTableVO.Module.ChatModel.ToolMcp.SSEServerParameters sseConfig = toolMcp.getSse();
 
-        // http://appbuilder.baidu.com/v2/ai_search/mcp/sse?api_key=bce-v3/ALTAK-JFZXXLpfxhAutDQvJ32Ei/4492c1879b8c2f0df4612ef5b4a52df1c1fba9f7
+        // SSE endpoint URL，API Key 从 agent YAML 配置的 sse-endpoint 中读取
 
         String originalBaseUri = sseConfig.getBaseUri();
         String baseUri = originalBaseUri;
