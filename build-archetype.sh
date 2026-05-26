@@ -50,6 +50,81 @@ sed -i 's|ai-agent-scaffold-lite-archetype|${rootArtifactId}-lite-archetype|g' "
 sed -i 's|/export/Logs/ai-agent-scaffold-boot|/export/Logs/${rootArtifactId}-boot|g' "$ARCH_RES/pom.xml"
 sed -i 's|gc-ai-agent-scaffold-boot|gc-${rootArtifactId}-boot|g' "$ARCH_RES/pom.xml"
 
+# 修复 archetype-metadata.xml：application.yml / Dockerfile / build.sh / push.sh
+# 默认不替换非 XML 文件中的变量，需要加 filtered="true"
+ARCH_MDATA="target/ai-agent-scaffold-lite-archetype/src/main/resources/META-INF/maven/archetype-metadata.xml"
+
+python3 -c "
+import re
+with open('$ARCH_MDATA', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 1. 把 yml 从 png 的 fileSet 中分出来，加上 filtered=true
+old = '''        <fileSet encoding=\"UTF-8\">
+          <directory>src/main/resources</directory>
+          <includes>
+            <include>**/*.png</include>
+            <include>**/*.yml</include>
+          </includes>
+        </fileSet>'''
+new = '''        <fileSet encoding=\"UTF-8\">
+          <directory>src/main/resources</directory>
+          <includes>
+            <include>**/*.png</include>
+          </includes>
+        </fileSet>
+        <fileSet filtered=\"true\" encoding=\"UTF-8\">
+          <directory>src/main/resources</directory>
+          <includes>
+            <include>**/*.yml</include>
+          </includes>
+        </fileSet>'''
+content = content.replace(old, new)
+
+# 2. 给 build.sh / Dockerfile / push.sh 的 fileSet 加上 filtered=true
+old = '''        <fileSet encoding=\"UTF-8\">
+          <directory></directory>
+          <includes>
+            <include>build.sh</include>
+            <include>Dockerfile</include>
+            <include>push.sh</include>
+          </includes>
+        </fileSet>'''
+new = '''        <fileSet filtered=\"true\" encoding=\"UTF-8\">
+          <directory></directory>
+          <includes>
+            <include>build.sh</include>
+            <include>Dockerfile</include>
+            <include>push.sh</include>
+          </includes>
+        </fileSet>'''
+content = content.replace(old, new)
+
+# 3. 给 docs/dev-ops 的 fileSet 加上 filtered=true
+old = '''    <fileSet encoding=\"UTF-8\">
+      <directory>docs/dev-ops</directory>
+      <includes>
+        <include>**/*.sh</include>
+        <include>**/*.yml</include>
+        <include>**/*.sql</include>
+      </includes>
+    </fileSet>'''
+new = '''    <fileSet filtered=\"true\" encoding=\"UTF-8\">
+      <directory>docs/dev-ops</directory>
+      <includes>
+        <include>**/*.sh</include>
+        <include>**/*.yml</include>
+        <include>**/*.sql</include>
+      </includes>
+    </fileSet>'''
+content = content.replace(old, new)
+
+with open('$ARCH_MDATA', 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print('archetype-metadata.xml 已修复')
+"
+
 echo "[3/4] 构建 archetype JAR..."
 cd target/ai-agent-scaffold-lite-archetype
 mvn clean package

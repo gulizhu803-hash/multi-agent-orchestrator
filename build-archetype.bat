@@ -42,6 +42,10 @@ powershell -Command "(Get-Content '%ARCH_RES%\docs\dev-ops\app\start.sh') -repla
 REM 父 pom 中的日志路径和 archetype 输出目录
 powershell -Command "(Get-Content '%ARCH_RES%\pom.xml') -replace 'ai-agent-scaffold-lite-archetype', '${rootArtifactId}-lite-archetype' -replace '/export/Logs/ai-agent-scaffold-boot', '/export/Logs/${rootArtifactId}-boot' -replace 'gc-ai-agent-scaffold-boot', 'gc-${rootArtifactId}-boot' ^| Set-Content '%ARCH_RES%\pom.xml'"
 
+echo [2c/4] 修复 archetype-metadata.xml（非 XML 文件添加 filtered=true）...
+set ARCH_MDATA=target\ai-agent-scaffold-lite-archetype\src\main\resources\META-INF\maven\archetype-metadata.xml
+powershell -ExecutionPolicy Bypass -File "%~dp0fix-archetype-metadata.ps1" -filePath "%ARCH_MDATA%"
+
 echo [3/4] 构建 archetype JAR...
 cd target\ai-agent-scaffold-lite-archetype
 call mvn clean package
