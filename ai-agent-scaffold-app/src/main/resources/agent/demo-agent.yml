@@ -1,0 +1,251 @@
+# ============================================================
+# AI Agent Scaffold —— 智能体配置演示文件
+# 展示了该项目支持的全部配置能力
+# ============================================================
+ai:
+  agent:
+    config:
+      tables:
+
+        # ============================================================
+        # 1. 单一智能体 —— 最简配置，直接运行一个 Agent
+        # 功能：使用 SSE MCP 检索 + Stdio MCP 抓取网页
+        # ============================================================
+        singleAgentDemo:
+          app-name: singleAgentDemo
+          agent:
+            agent-id: 100001
+            agent-name: 单一智能体演示
+            agent-desc: 集成搜索与网页抓取的编程助手
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                # 类型一：SSE —— 远程 MCP 服务器（HTTP Server-Sent Events）
+                - sse:
+                    name: baidu-search
+                    base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
+                    sse-endpoint: sse?api_key=${AI_AGENT_MCP_API_KEY}
+                    request-timeout: 30000
+                # 类型二：Stdio —— 本地子进程 MCP 服务器
+                - stdio:
+                    name: web-fetch
+                    request-timeout: 60000
+                    server-parameters:
+                      command: npx
+                      args: [ "-y", "@anthropic-ai/mcp-sse-fetch" ]
+                # 类型三：Local —— Spring Bean 引用，需在代码中注册对应 Bean
+                - local:
+                    name: myToolCallbackProvider
+            agents:
+              - name: codingAssistant
+                description: 全能编程助手，可搜索文档、抓取网页并编写代码
+                instruction: |
+                  你是一个全能编程助手，具备以下能力：
+                  1. 使用 baidu-search 检索技术文档和解决方案
+                  2. 使用 web-fetch 获取具体网页内容
+                  3. 综合检索结果提供准确的代码实现
+
+                  请始终输出高质量代码，包含必要的注释和错误处理。
+                output-key: coding_result
+            runner:
+              agent-name: codingAssistant
+              plugin-name-list:
+                - myTestPlugin
+
+        # ============================================================
+        # 2. 串行工作流 —— 多个 Agent 按顺序执行
+        # 适用场景：代码流水线（编写 → 审查 → 重构）
+        # ============================================================
+        sequentialWorkflowDemo:
+          app-name: sequentialWorkflowDemo
+          agent:
+            agent-id: 100002
+            agent-name: 代码流水线
+            agent-desc: 多阶段串行：编写 → 审查 → 重构
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                - sse:
+                    name: baidu-search
+                    base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
+                    sse-endpoint: sse?api_key=${AI_AGENT_MCP_API_KEY}
+                    request-timeout: 30000
+            agents:
+              - name: codeWriter
+                description: 根据需求编写初始代码
+                instruction: |
+                  你是一个 Java 代码生成器。
+                  根据用户的需求，编写完整可运行的 Java 代码。
+                  用 ```java 代码块包裹输出，仅输出代码。
+                output-key: generated_code
+              - name: codeReviewer
+                description: 审查代码质量并提供改进建议
+                instruction: |
+                  你是 Java 代码审查专家，审查以下代码：
+                  ```java
+                  {generated_code}
+                  ```
+                  检查维度：正确性、可读性、性能、边界情况、最佳实践。
+                  输出审查意见列表，如果代码无需改进则输出 "No major issues found."
+                output-key: review_comments
+              - name: codeRefactorer
+                description: 根据审查意见重构代码
+                instruction: |
+                  根据审查意见改进代码。
+                  原始代码：```java\n{generated_code}\n```
+                  审查意见：{review_comments}
+                  输出重构后的完整代码。
+                output-key: refactored_code
+            agent-workflows:
+              - type: sequential
+                name: codePipeline
+                description: 代码编写 → 审查 → 重构 串行流水线
+                sub-agents:
+                  - codeWriter
+                  - codeReviewer
+                  - codeRefactorer
+            runner:
+              agent-name: codePipeline
+
+        # ============================================================
+        # 3. 并行工作流 —— 多个 Agent 同时执行再汇总
+        # 适用场景：多方向并行调研 → 合成报告
+        # ============================================================
+        parallelWorkflowDemo:
+          app-name: parallelWorkflowDemo
+          agent:
+            agent-id: 100003
+            agent-name: 并行研究助手
+            agent-desc: 并行执行多方向研究并汇总结果
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                - sse:
+                    name: baidu-search
+                    base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
+                    sse-endpoint: sse?api_key=${AI_AGENT_MCP_API_KEY}
+                    request-timeout: 30000
+            agents:
+              - name: renewableEnergyResearcher
+                description: 研究可再生能源领域最新进展
+                instruction: |
+                  你是能源领域研究专家，使用 baidu-search 检索"可再生能源"最新进展。
+                  输出 1-2 句话的研究摘要。
+                output-key: renewable_energy_result
+              - name: evResearcher
+                description: 研究电动汽车技术最新发展
+                instruction: |
+                  你是交通领域研究专家，使用 baidu-search 检索"电动汽车技术"最新发展。
+                  输出 1-2 句话的研究摘要。
+                output-key: ev_technology_result
+              - name: carbonCaptureResearcher
+                description: 研究碳捕获技术现状
+                instruction: |
+                  你是气候解决方案专家，使用 baidu-search 检索"碳捕获方法"现状。
+                  输出 1-2 句话的研究摘要。
+                output-key: carbon_capture_result
+              - name: synthesisAgent
+                description: 汇总并行研究结果生成结构化报告
+                instruction: |
+                  将多个研究摘要合成为结构化报告：
+                  - 可再生能源：{renewable_energy_result}
+                  - 电动汽车：{ev_technology_result}
+                  - 碳捕获：{carbon_capture_result}
+                  使用标题组织，严格基于以上信息输出，不添加外部知识。
+                output-key: final_report
+            agent-workflows:
+              # 第一步：三个研究方向并行执行
+              - type: parallel
+                name: parallelResearch
+                description: 并行执行三个方向的研究
+                sub-agents:
+                  - renewableEnergyResearcher
+                  - evResearcher
+                  - carbonCaptureResearcher
+              # 第二步：串行汇总（先并行研究，再合成报告）
+              - type: sequential
+                name: researchPipeline
+                description: 先并行研究，再汇总生成最终报告
+                sub-agents:
+                  - parallelResearch
+                  - synthesisAgent
+            runner:
+              agent-name: researchPipeline
+
+        # ============================================================
+        # 4. 循环工作流 —— Agent 内部迭代执行直到满足退出条件
+        # 适用场景：文档迭代优化（写初稿 → 批评 → 修改 → 批评 → ...）
+        # ============================================================
+        loopWorkflowDemo:
+          app-name: loopWorkflowDemo
+          agent:
+            agent-id: 100004
+            agent-name: 迭代写作助手
+            agent-desc: 通过多轮批评-优化循环提升写作质量
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+            agents:
+              - name: initialWriter
+                description: 根据主题撰写初稿
+                instruction: |
+                  根据用户提供的主题，撰写 2-4 句话的短文章初稿。
+                  仅输出文章文本。
+                output-key: current_document
+              - name: criticAgent
+                description: 审查草稿并提供改进意见或标记完成
+                instruction: |
+                  审查以下文章草稿：
+                  {{current_document}}
+                  如果有改进空间：给出 1-2 条具体优化建议。
+                  如果已完善：回复 "No major issues found."
+                output-key: criticism
+              - name: refinerAgent
+                description: 根据批评优化文档或调用 exitLoop 退出
+                instruction: |
+                  当前文档：{{current_document}}
+                  批评意见：{{criticism}}
+                  如果批评是 "No major issues found."，调用 exitLoop 函数退出。
+                  否则根据批评优化文档并输出新版本。
+                output-key: current_document
+            agent-workflows:
+              # 循环：批评 → 修改 → 批评 → 修改... 直到退出
+              - type: loop
+                name: writingLoop
+                description: 批评-优化迭代循环，最多迭代 5 轮
+                sub-agents:
+                  - criticAgent
+                  - refinerAgent
+                max-iterations: 5
+              # 串行包装：先写初稿 → 再进入迭代优化
+              - type: sequential
+                name: iterativeWritingPipeline
+                description: 先写初稿，再进入迭代优化循环
+                sub-agents:
+                  - initialWriter
+                  - writingLoop
+            runner:
+              agent-name: iterativeWritingPipeline

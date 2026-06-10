@@ -48,3 +48,9 @@ build/
 
 # 运行时数据
 ai-agent-scaffold-app/data/
+
+# IDE 缓存
+.idea/.cache/
+
+# 部署仓库（含二进制 JAR）
+deploy-scaffold/maven-repo/

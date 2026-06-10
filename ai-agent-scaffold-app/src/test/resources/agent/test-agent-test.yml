@@ -1,0 +1,89 @@
+ai:
+  agent:
+    config:
+      tables:
+        # ============================================================
+        # 测试用智能体 1 (原 only-one-agent / test_agent 的角色)
+        # ============================================================
+        testAgent:
+          app-name: testAgent
+          agent:
+            agent-id: 100003
+            agent-name: 测试智能体
+            agent-desc: 测试用智能体 — 无 SSE MCP 依赖
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                - local:
+                    name: myToolCallbackProvider
+            agents:
+              - name: onlyAgent
+                description: 测试智能体 — 提供学习计划
+                instruction: |
+                  你是一个测试智能体。请根据用户的问题提供简洁的回答。
+                output-key: test_result
+            runner:
+              agent-name: onlyAgent
+
+        # ============================================================
+        # 测试用智能体 2 (原 tech-blog-writer 的角色)
+        # ============================================================
+        techBlogWriter:
+          app-name: techBlogWriter
+          agent:
+            agent-id: 300001
+            agent-name: 技术博客写作专家
+            agent-desc: AI 驱动的技术博客创作管线 — 测试用，无 SSE MCP
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+              embeddings-path: v1/embeddings
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                - local:
+                    name: myToolCallbackProvider
+            agents:
+              - name: outlinePlanner
+                description: 技术博客大纲规划师
+                instruction: |
+                  你是一名资深技术博客主编。根据用户输入制定博客大纲。
+                  输出仅包含大纲，不写正文。
+                output-key: blog_outline
+              - name: blogWriter
+                description: 技术博客主笔
+                instruction: |
+                  你是一名资深技术博客作者。根据大纲 {blog_outline} 撰写完整博客正文。
+                  使用 Markdown 格式，正文不少于 2000 字。
+                output-key: blog_draft
+              - name: diagramDesigner
+                description: 技术图表设计师
+                instruction: |
+                  你是一名技术图表设计专家。对博客草稿 {blog_draft} 进行图表增强。
+                  在合适位置插入 Mermaid 图表。
+                output-key: blog_with_diagrams
+              - name: polishEditor
+                description: 技术博客润色编辑
+                instruction: |
+                  你是一名资深技术图书编辑。对博客终稿 {blog_with_diagrams} 做最终审校和润色。
+                  在文章末尾附上编辑备注。
+                output-key: final_blog
+            agent-workflows:
+              - type: sequential
+                name: blogPipeline
+                description: 技术博客全流程
+                sub-agents:
+                  - outlinePlanner
+                  - blogWriter
+                  - diagramDesigner
+                  - polishEditor
+            runner:
+              agent-name: blogPipeline

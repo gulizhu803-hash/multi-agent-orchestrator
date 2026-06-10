@@ -26,8 +26,8 @@ ai:
                     name: myToolCallbackProvider
             agents:
               - name: onlyAgent
-                description: 小傅哥学习项目计划
+                description: AI 编程学习项目计划
                 instruction: |
-                  通过百度检索小傅哥编程实战项目，并根据检索内容，针对初学用户给出学习计划。
+                  通过百度检索 AI 编程实战项目，并根据检索内容，针对初学用户给出学习计划。
             runner:
               agent-name: onlyAgent

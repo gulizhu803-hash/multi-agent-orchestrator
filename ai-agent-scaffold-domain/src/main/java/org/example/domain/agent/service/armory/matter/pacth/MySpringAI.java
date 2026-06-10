@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * Spring AI 补丁
- * @author xiaofuge bugstack.cn @小傅哥
+ * @author ai-agent-scaffold
  * 2026/1/9 08:20
  */
 public class MySpringAI extends BaseLlm {

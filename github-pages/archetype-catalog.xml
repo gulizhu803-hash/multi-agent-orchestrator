@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-catalog xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0 http://maven.apache.org/xsd/archetype-catalog-1.0.0.xsd">
+  <archetypes>
+    <archetype>
+      <groupId>org.example</groupId>
+      <artifactId>ai-agent-scaffold-archetype</artifactId>
+      <version>1.0</version>
+      <repository>__GITHUB_PAGES_URL__/</repository>
+      <description>AI Agent Scaffold - DDD 架构智能体开发脚手架 (Spring Boot 3 + Google ADK + Spring AI)</description>
+    </archetype>
+  </archetypes>
+</archetype-catalog>

@@ -127,12 +127,12 @@ public class AiAgentAutoConfigTest {
         InMemoryRunner runner = aiAgentRegisterVO.getRunner();
 
         Session session = runner.sessionService()
-                .createSession(appName, "xiaofuge")
+                .createSession(appName, "test-user")
                 .blockingGet();
 
         Content userMsg = Content.fromParts(Part.fromText("给我一份学习计划"));
         log.info("📤 发送消息: 给我一份学习计划");
-        Flowable<Event> events = runner.runAsync("xiaofuge", session.id(), userMsg);
+        Flowable<Event> events = runner.runAsync("test-user", session.id(), userMsg);
 
         List<String> outputs = new ArrayList<>();
         try {
@@ -173,14 +173,14 @@ public class AiAgentAutoConfigTest {
         InMemoryRunner runner = aiAgentRegisterVO.getRunner();
 
         Session session = runner.sessionService()
-                .createSession(appName, "xiaofuge")
+                .createSession(appName, "test-user")
                 .blockingGet();
         log.info("✅ 会话创建成功: {}", session.id());
 
-        Content userMsg = Content.fromParts(Part.fromText("把xiaofuge转换为大写"));
-        log.info("📤 发送消息: 把xiaofuge转换为大写");
+        Content userMsg = Content.fromParts(Part.fromText("把test-user转换为大写"));
+        log.info("📤 发送消息: 把test-user转换为大写");
         
-        Flowable<Event> events = runner.runAsync("xiaofuge", session.id(), userMsg);
+        Flowable<Event> events = runner.runAsync("test-user", session.id(), userMsg);
 
         List<String> outputs = new ArrayList<>();
         try {
@@ -208,8 +208,8 @@ public class AiAgentAutoConfigTest {
         // 添加断言验证结果
         Assertions.assertFalse(outputs.isEmpty(), "Agent应返回至少一个非空事件");
         String fullOutput = String.join(" ", outputs);
-        Assertions.assertTrue(fullOutput.toUpperCase().contains("XIAOFUGE"),
-                "返回内容应包含'XIAOFUGE'（大写形式），实际输出:" + fullOutput);
+        Assertions.assertTrue(fullOutput.toUpperCase().contains("TEST-USER"),
+                "返回内容应包含'TEST-USER'（大写形式），实际输出:" + fullOutput);
         
         System.out.println("[STDOUT] ========== 测试结束 ==========");
     }
