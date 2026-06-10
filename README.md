@@ -1,59 +1,71 @@
-# ai-agent-scaffold
+# multi-agent-orchestrator
 
-AI Agent 项目脚手架，基于 DDD 分层架构，通过 Maven Archetype 一键生成新项目。
+**AI Agent 引擎 — 可配置多 Agent 编排系统**
 
-## 项目简介
+[![Java](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green)](https://spring.io/projects/spring-boot)
+[![Spring AI](https://img.shields.io/badge/Spring%20AI-latest-brightgreen)](https://spring.io/projects/spring-ai)
+[![Maven Archetype](https://img.shields.io/badge/Maven-Archetype-orange)](https://maven.apache.org/archetype/)
 
-这是一个 Maven Archetype 项目，用于快速生成 AI Agent 应用的基础工程结构。
+一个基于 **Spring AI + Google ADK** 的 AI Agent 引擎，支持 YAML 声明式配置多 Agent 编排，通过 Maven Archetype 一键生成新项目。
 
-### 模块结构
+---
 
-```
-├── ai-agent-scaffold-api            # API 层 — 对外接口定义
-├── ai-agent-scaffold-app             # 应用层 — 启动入口、配置
-├── ai-agent-scaffold-domain          # 领域层 — 核心业务逻辑
-├── ai-agent-scaffold-trigger         # 触发层 — HTTP/消息处理
-├── ai-agent-scaffold-infrastructure  # 基础设施层 — 数据持久化等
-├── ai-agent-scaffold-types           # 类型定义 — 通用枚举、DTO
-├── docs/dev-ops                      # 部署脚本
-└── deploy-scaffold                   # Archetype 部署仓库
-```
+## 特性
 
-使用该脚手架生成的新项目会自动替换包名、模块名和应用名称，无需手动修改。
+- **声明式 Agent 配置** — 通过 YAML 定义 Agent 行为、模型、工具，无需编写编排代码
+- **多 Agent 编排** — 支持 Sequential（串行）、Parallel（并行）、Loop 等工作流模式
+- **MCP 协议集成** — 内置 SSE MCP 客户端，接入百度搜索等外部 MCP Server
+- **多模型切换** — 一行配置切换 OpenAI / DeepSeek / Qwen 等模型
+- **DDD 分层架构** — API → App → Domain → Trigger → Infrastructure，清晰分离关注点
+- **Maven Archetype 脚手架** — 一条命令生成完整项目骨架
+- **Docker 部署** — 自带 Dockerfile 和 docker-compose 编排（MySQL + Redis）
 
-## 构建与使用
+## 快速开始
 
-### 构建 Archetype
+### 环境要求
 
-在项目根目录执行：
+- JDK 17+
+- Maven 3.6+
+- MySQL 8.0+（可选，dev profile 需要）
+- Redis（可选）
 
-**Linux / macOS / Git Bash：**
-
-```bash
-./build-archetype.sh
-```
-
-**Windows（cmd）：**
-
-```cmd
-build-archetype.bat
-```
-
-构建产物：
-- 生成 Archetype JAR 到 `target/archetype-nginx-repo/`，可直接部署到 Nginx 作为内部 Maven 仓库
-- 脚本会自动清理无用文件、替换硬编码名称为模板变量、修复非 XML 文件的变量替换配置
-
-### 生成新项目
-
-安装 Archetype 到本地仓库后即可生成项目：
+### 1. 配置 API Key
 
 ```bash
-# 安装到本地 Maven 仓库
-mvn install:install-file \
-  -Dfile=target/ai-agent-scaffold-lite-archetype/target/ai-agent-scaffold-archetype-1.0.jar \
-  -DpomFile=target/ai-agent-scaffold-lite-archetype/pom.xml
+cp .env.example ai-agent-scaffold-app/env-config.properties
+```
 
-# 生成新项目
+编辑 `ai-agent-scaffold-app/env-config.properties`，填入你的 API Key：
+
+```properties
+# 模型 API Key（OpenAI / DeepSeek / Qwen 三选一）
+AI_AGENT_OPENAI_API_KEY=sk-your-api-key-here
+
+# 百度 MCP 搜索服务 Key（可选）
+AI_AGENT_MCP_API_KEY=bce-v3/your-mcp-api-key-here
+
+# 数据库密码
+MYSQL_ROOT_PASSWORD=your-db-password
+```
+
+> ⚠️ `env-config.properties` 已被 `.gitignore` 排除，不会提交到仓库。
+
+### 2. 启动应用
+
+```bash
+cd ai-agent-scaffold-app
+mvn spring-boot:run -Dspring.profiles.active=dev
+```
+
+### 3. 生成新项目（Archetype）
+
+```bash
+# 构建 Archetype
+./build-archetype.sh      # Linux / macOS
+build-archetype.bat       # Windows
+
+# 用 Archetype 生成新项目
 mvn archetype:generate \
   -DarchetypeGroupId=org.example \
   -DarchetypeArtifactId=ai-agent-scaffold-archetype \
@@ -66,20 +78,79 @@ mvn archetype:generate \
   -DinteractiveMode=false
 ```
 
-生成的 `your-project` 会包含完整的 DDD 模块结构、Docker 部署配置及启动脚本。
+## 项目结构
 
-## 本地配置（API Key / 数据库密码）
-
-所有敏感信息统一放在 `ai-agent-scaffold-app/env-config.properties`，Spring 启动时自动加载：
-
-```properties
-# 编辑此文件填入你的 key
-AI_AGENT_OPENAI_API_KEY=sk-your-api-key-here
-AI_AGENT_MCP_API_KEY=bce-v3/your-mcp-api-key-here
-MYSQL_ROOT_PASSWORD=your-db-password
+```
+├── ai-agent-scaffold-api            # API 层 — 对外接口定义（DTO、RPC 接口）
+├── ai-agent-scaffold-app             # 应用层 — 启动入口、YAML 配置、env 配置
+│   └── src/main/resources/agent/    # Agent 定义（YAML）
+│       ├── demo-agent.yml           #   示例：多 Agent 编排
+│       ├── complaint-agent.yml      #   示例：投诉处理 Agent
+│       └── tech-blog-writer.yml     #   示例：技术博客生成
+├── ai-agent-scaffold-domain          # 领域层 — 核心业务逻辑
+│   └── agent/service/armory/        #   Agent 运行时引擎
+│       ├── matter/                  #     模型适配、MCP 客户端、工具注册
+│       └── tree/                    #     策略路由（责任链模式）
+├── ai-agent-scaffold-trigger         # 触发层 — HTTP Controller、消息监听
+├── ai-agent-scaffold-infrastructure  # 基础设施层 — Repository 实现、数据持久化
+├── ai-agent-scaffold-types           # 类型定义 — 通用枚举、常量
+├── docs/dev-ops                      # DevOps — Docker Compose、Nginx 配置
+└── deploy-scaffold                   # Archetype 部署文件
 ```
 
-该文件已被 `.gitignore` 排除，不会提交到 Git，也不会进入生成的 Archetype 模板。
+## Agent 配置示例
 
-参考 `.env.example` 查看所有可用变量。
+```yaml
+ai:
+  agent:
+    config:
+      tables:
+        myAgent:
+          app-name: myAgent
+          agent:
+            agent-id: 100001
+            agent-name: 我的智能体
+            agent-desc: 一个示例智能体
+          module:
+            ai-api:
+              base-url: ${AI_BASE_URL}
+              api-key: ${AI_AGENT_OPENAI_API_KEY}
+              completions-path: ${AI_COMPLETIONS_PATH}
+            chat-model:
+              model: ${AI_MODEL}
+              tool-mcp-list:
+                - sse:
+                    name: baidu-search
+                    base-uri: https://appbuilder.baidu.com/v2/ai_search/mcp/
+                    sse-endpoint: sse?api_key=${AI_AGENT_MCP_API_KEY}
+                    request-timeout: 30000
+            agents:
+              - name: myAgent
+                description: 执行任务
+                instruction: |
+                  你是一个专业的 AI 助手。
+            runner:
+              agent-name: myAgent
+```
 
+## 模型切换
+
+在 `env-config.properties` 中切换模型只需修改 3 行：
+
+| 模型 | BASE_URL | COMPLETIONS_PATH | MODEL |
+|------|----------|-----------------|-------|
+| OpenAI | `https://api.openai.com` | `v1/chat/completions` | `gpt-4.1` |
+| DeepSeek | `https://api.deepseek.com` | `v1/chat/completions` | `deepseek-chat` |
+| Qwen (通义千问) | `https://dashscope.aliyuncs.com/compatible-mode/v1/` | `chat/completions` | `qwen-plus` |
+
+## 技术栈
+
+- **AI 框架**：Spring AI + Google Agent Development Kit (ADK)
+- **后端**：Spring Boot 3.x, MyBatis, MySQL
+- **MCP 协议**：SSE Transport, Tool Callbacks
+- **构建工具**：Maven Archetype, Docker
+- **测试**：JUnit 5, Spring Boot Test
+
+## 许可证
+
+[Apache License 2.0](LICENSE)
